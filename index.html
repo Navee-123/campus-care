@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusCare - College Complaint Management</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f3f4fa;
+    color: #25283b;
+}
+
+header {
+    background: #5145c5;
+    color: white;
+    padding: 25px;
+    text-align: center;
+}
+
+header h1 {
+    margin-bottom: 8px;
+}
+
+.container {
+    width: 90%;
+    max-width: 1100px;
+    margin: 30px auto;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.login-box {
+    background: white;
+    max-width: 420px;
+    margin: 70px auto;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px #00000015;
+}
+
+.login-box h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 13px;
+    margin: 9px 0;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    outline: none;
+    font-size: 14px;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #5145c5;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+button {
+    background: #5145c5;
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+button:hover {
+    background: #3930a0;
+}
+
+.login-box button {
+    width: 100%;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.logout {
+    background: #e74c3c;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.stat {
+    background: white;
+    padding: 22px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 3px 10px #00000010;
+}
+
+.stat h3 {
+    color: #777;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.stat h2 {
+    color: #5145c5;
+    font-size: 28px;
+}
+
+section {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 22px;
+    box-shadow: 0 3px 12px #00000008;
+}
+
+section h2 {
+    margin-bottom: 18px;
+}
+
+form button {
+    width: 100%;
+}
+
+.complaint-card {
+    border: 1px solid #e3e5ed;
+    padding: 18px;
+    border-radius: 9px;
+    margin: 12px 0;
+    background: #fff;
+}
+
+.complaint-card h3 {
+    margin: 8px 0;
+}
+
+.complaint-card p {
+    margin: 7px 0;
+    color: #666;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.status {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    margin: 8px 0;
+}
+
+.Pending {
+    background: #fff0d9;
+    color: #b66b00;
+}
+
+.In-Progress {
+    background: #e1efff;
+    color: #1766b0;
+}
+
+.Resolved {
+    background: #dff7e8;
+    color: #168344;
+}
+
+.update-btn {
+    margin: 5px;
+    padding: 9px 12px;
+    font-size: 12px;
+}
+
+.notification {
+    background: #f0efff;
+    border-left: 4px solid #5145c5;
+    padding: 14px;
+    margin: 10px 0;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.small {
+    font-size: 12px;
+    color: #777;
+}
+
+.empty {
+    padding: 20px;
+    text-align: center;
+    color: #888;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #888;
+    font-size: 13px;
+}
+
+@media(max-width: 700px) {
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .container {
+        width: 95%;
+    }
+
+    section {
+        padding: 17px;
+    }
+}
+
+@media(max-width: 380px) {
+    .stats {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>✚ CampusCare</h1>
+    <p>College Complaint and Service Request Management System</p>
+</header>
+
+<div class="container">
+
+<!-- LOGIN PAGE -->
+
+<div class="login-box" id="loginBox">
+
+    <h2>Welcome to CampusCare</h2>
+    <p class="small" style="text-align:center">
+        Login to access your campus portal
+    </p>
+
+    <form id="loginForm">
+
+        <input type="text" id="username"
+        placeholder="Enter your name" required>
+
+        <select id="role">
+            <option value="Student">Student</option>
+            <option value="Faculty">Faculty / Staff</option>
+            <option value="Admin">Admin</option>
+        </select>
+
+        <button type="submit">Login</button>
+
+    </form>
+
+</div>
+
+<!-- DASHBOARD -->
+
+<div id="dashboard" class="hidden">
+
+    <div class="dashboard-header">
+
+        <div>
+            <h2 id="welcomeText">Welcome!</h2>
+            <p id="roleText" class="small"></p>
+        </div>
+
+        <button class="logout" onclick="logout()">
+            Logout
+        </button>
+
+    </div>
+
+    <!-- STATISTICS -->
+
+    <div class="stats">
+
+        <div class="stat">
+            <h3>Total Complaints</h3>
+            <h2 id="total">0</h2>
+        </div>
+
+        <div class="stat">
+            <h3>Pending</h3>
+            <h2 id="pending">0</h2>
+        </div>
+
+        <div class="stat">
+            <h3>In Progress</h3>
+            <h2 id="progress">0</h2>
+        </div>
+
+        <div class="stat">
+            <h3>Resolved</h3>
+            <h2 id="resolved">0</h2>
+        </div>
+
+    </div>
+    <!-- ADMIN QR CODE GENERATOR -->
+
+<section id="adminQRSection" class="hidden">
+
+    <h2>🔳 QR Code Generator</h2>
+
+    <input
+        type="text"
+        id="qrLocation"
+        placeholder="Enter Location (Example: Computer Lab)"
+    >
+
+    <button onclick="generateQR()">
+        Generate QR Code
+    </button>
+
+    <div id="qrcode"></div>
+
+    <button onclick="downloadQR()">
+        Download QR Code
+    </button>
+    <hr style="margin:20px 0">
+
+<h3>📷 QR Code Scanner</h3>
+
+<div id="qr-reader" style="width:100%; max-width:400px;"></div>
+
+<button type="button" onclick="startScanner()">
+    Start QR Scanner
+</button>
+
+<button type="button" onclick="stopScanner()">
+    Stop Scanner
+</button>
+
+<p id="scanResult" class="small"></p>
+
+</section>
+    <!-- COMPLAINT FORM -->
+
+    <section id="complaintSection">
+
+        <h2>📝 Submit a Complaint</h2>
+
+        <form id="complaintForm">
+
+            <input type="text" id="title"
+            placeholder="Complaint Title" required>
+
+            <select id="category" required>
+                <option value="">Select Category</option>
+                <option>Classroom</option>
+                <option>Hostel</option>
+                <option>Library</option>
+                <option>Canteen</option>
+                <option>Washroom</option>
+                <option>Transport</option>
+                <option>Electrical</option>
+                <option>Cleaning</option>
+                <option>Other</option>
+            </select>
+
+            <select id="priority">
+                <option>Normal</option>
+                <option>High</option>
+                <option>Urgent</option>
+            </select>
+
+            <input type="text" id="location"
+            placeholder="Complaint Location" required>
+
+            <textarea id="description"
+            placeholder="Describe your problem..."
+            required></textarea>
+
+            <button type="submit">
+                Submit Complaint
+            </button>
+
+        </form>
+
+    </section>
+
+    <!-- COMPLAINT HISTORY -->
+
+    <section>
+
+        <h2>📋 Complaint History</h2>
+
+        <input type="text" id="search"
+        placeholder="Search complaints..."
+        oninput="displayComplaints()">
+
+        <div id="complaintList"></div>
+
+    </section>
+
+    <hr style="margin:20px 0">
+
+<h3>📷 QR Code Scanner</h3>
+
+<div id="qr-reader" style="width:100%; max-width:400px;"></div>
+
+<button type="button" onclick="startScanner()">
+    Start QR Scanner
+</button>
+
+<button type="button" onclick="stopScanner()">
+    Stop Scanner
+</button>
+
+<p id="scanResult" class="small"></p>
+
+</div>
+
+</div>
+
+<footer>
+    © 2026 CampusCare | College Support System
+</footer>
+<script>
+
+// ===============================
+// CAMPUSCARE - UPDATED JAVASCRIPT
+// ===============================
+
+let currentUser = null;
+
+let complaints = JSON.parse(
+    localStorage.getItem("campusComplaints") || "[]"
+);
+
+let notifications = JSON.parse(
+    localStorage.getItem("campusNotifications") || "[]"
+);
+
+let html5QrCode = null;
+
+// SAVE DATA
+
+function saveData() {
+
+    localStorage.setItem(
+        "campusComplaints",
+        JSON.stringify(complaints)
+    );
+
+    localStorage.setItem(
+        "campusNotifications",
+        JSON.stringify(notifications)
+    );
+}
+
+// LOGIN
+
+document.getElementById("loginForm")
+.addEventListener("submit", function(e) {
+
+    e.preventDefault();
+
+    currentUser = {
+        name: document.getElementById("username").value.trim(),
+        role: document.getElementById("role").value
+    };
+
+    if (!currentUser.name) return;
+
+    document.getElementById("loginBox")
+        .classList.add("hidden");
+
+    document.getElementById("dashboard")
+        .classList.remove("hidden");
+
+    document.getElementById("welcomeText").textContent =
+        "Welcome, " + currentUser.name + " 👋";
+
+    document.getElementById("roleText").textContent =
+        "Role: " + currentUser.role;
+
+    document.getElementById("adminQRSection")
+        .classList.toggle(
+            "hidden",
+            currentUser.role !== "Admin"
+        );
+
+    renderDashboard();
+});
+
+// LOGOUT
+
+function logout() {
+
+    stopScanner();
+
+    currentUser = null;
+
+    document.getElementById("dashboard")
+        .classList.add("hidden");
+
+    document.getElementById("loginBox")
+        .classList.remove("hidden");
+
+    document.getElementById("loginForm").reset();
+}
+
+// VISIBLE COMPLAINTS
+
+function getVisibleComplaints() {
+
+    if (!currentUser) return [];
+
+    if (currentUser.role === "Admin") {
+        return complaints;
+    }
+
+    return complaints.filter(c =>
+        c.owner === currentUser.name
+    );
+}
+
+// ADD NOTIFICATION
+
+function addNotification(owner, message) {
+
+    notifications.unshift({
+
+        id: Date.now() + Math.random(),
+
+        owner: owner,
+
+        message: message,
+
+        date: new Date().toLocaleString(),
+
+        read: false
+
+    });
+
+    saveData();
+}
+
+// SUBMIT COMPLAINT
+
+document.getElementById("complaintForm")
+.addEventListener("submit", function(e) {
+
+    e.preventDefault();
+
+    if (!currentUser) return;
+
+    const complaint = {
+
+        id: "CC" + Date.now().toString().slice(-7),
+
+        owner: currentUser.name,
+
+        title: document.getElementById("title").value.trim(),
+
+        category: document.getElementById("category").value,
+
+        priority: document.getElementById("priority").value,
+
+        location: document.getElementById("location").value.trim(),
+
+        description: document.getElementById("description").value.trim(),
+
+        status: "Pending",
+
+        date: new Date().toLocaleString()
+
+    };
+
+    complaints.unshift(complaint);
+
+    addNotification(
+        currentUser.name,
+        "Your complaint " + complaint.id +
+        " was submitted successfully."
+    );
+
+    if (currentUser.role !== "Admin") {
+
+        addNotification(
+            "CampusCare Admin",
+            "New complaint received from " +
+            currentUser.name + ": " + complaint.title
+        );
+
+    }
+
+    this.reset();
+
+    saveData();
+
+    renderDashboard();
+
+    alert("Complaint submitted successfully!");
+
+});
+
+// DASHBOARD
+
+function renderDashboard() {
+
+    if (!currentUser) return;
+
+    const list = getVisibleComplaints();
+
+    document.getElementById("total").textContent =
+        list.length;
+
+    document.getElementById("pending").textContent =
+        list.filter(c => c.status === "Pending").length;
+
+    document.getElementById("progress").textContent =
+        list.filter(c => c.status === "In Progress").length;
+
+    document.getElementById("resolved").textContent =
+        list.filter(c => c.status === "Resolved").length;
+
+    displayComplaints();
+
+    displayNotifications();
+}
+
+// DISPLAY COMPLAINTS
+
+function displayComplaints() {
+
+    if (!currentUser) return;
+
+    const list = getVisibleComplaints();
+
+    const search = document.getElementById("search")
+        .value.toLowerCase();
+
+    const filtered = list.filter(c => {
+
+        return (
+            c.title.toLowerCase().includes(search) ||
+            c.category.toLowerCase().includes(search) ||
+            c.id.toLowerCase().includes(search) ||
+            c.location.toLowerCase().includes(search)
+        );
+
+    });
+
+    const complaintList =
+        document.getElementById("complaintList");
+
+    complaintList.innerHTML = "";
+
+    if (filtered.length === 0) {
+
+        complaintList.innerHTML =
+            '<div class="empty">No complaints found.</div>';
+
+        return;
+    }
+
+    filtered.forEach(c => {
+
+        const card = document.createElement("div");
+
+        card.className = "complaint-card";
+
+        const title = document.createElement("h3");
+        title.textContent = c.title;
+
+        const details = [
+            "Complaint ID: " + c.id,
+            "Category: " + c.category,
+            "Submitted by: " + c.owner,
+            "Location: " + c.location,
+            "Description: " + c.description,
+            "Priority: " + c.priority,
+            "Date: " + c.date
+        ];
+
+        card.appendChild(title);
+
+        details.forEach(value => {
+
+            const p = document.createElement("p");
+
+            p.textContent = value;
+
+            card.appendChild(p);
+
+        });
+
+        const status = document.createElement("span");
+
+        status.className =
+            "status " + c.status.replace(" ", "-");
+
+        status.textContent = c.status;
+
+        card.appendChild(status);
+
+        // ADMIN STATUS UPDATE
+
+        if (currentUser.role === "Admin") {
+
+            const updateText = document.createElement("p");
+
+            updateText.textContent =
+                "Update Complaint Status:";
+
+            const select = document.createElement("select");
+
+            ["Pending", "In Progress", "Resolved"]
+            .forEach(value => {
+
+                const option = document.createElement("option");
+
+                option.value = value;
+
+                option.textContent = value;
+
+                if (c.status === value) {
+                    option.selected = true;
+                }
+
+                select.appendChild(option);
+
+            });
+
+            select.addEventListener("change", function() {
+
+                updateStatus(c.id, this.value);
+
+            });
+
+            card.append(updateText, select);
+
+        }
+
+        complaintList.appendChild(card);
+
+    });
+
+}
+
+// ADMIN UPDATE STATUS
+
+function updateStatus(id, newStatus) {
+
+    if (!currentUser || currentUser.role !== "Admin") {
+        return;
+    }
+
+    const complaint = complaints.find(c => c.id === id);
+
+    if (!complaint || complaint.status === newStatus) {
+        return;
+    }
+
+    complaint.status = newStatus;
+
+    addNotification(
+        complaint.owner,
+        "Your complaint " + complaint.id +
+        " status changed to " + newStatus
+    );
+
+    saveData();
+
+    renderDashboard();
+
+    alert("Complaint status updated successfully!");
+
+}
+
+// DISPLAY NOTIFICATIONS
+
+function displayNotifications() {
+
+    if (!currentUser) return;
+
+    const notificationList =
+        document.getElementById("notifications");
+
+    notificationList.innerHTML = "";
+
+    const list = notifications.filter(n => {
+
+        if (currentUser.role === "Admin") {
+            return n.owner === "CampusCare Admin";
+        }
+
+        return n.owner === currentUser.name;
+
+    });
+
+    const unread = list.filter(n => n.read !== true).length;
+
+    document.getElementById("unreadCount").textContent =
+        unread;
+
+    if (list.length === 0) {
+
+        notificationList.innerHTML =
+            '<div class="empty">No notifications available.</div>';
+
+        return;
+    }
+
+    list.forEach(n => {
+
+        const item = document.createElement("div");
+
+        item.className = "notification";
+
+        if (n.read === true) {
+            item.style.opacity = "0.6";
+        }
+
+        const message = document.createElement("p");
+
+        message.textContent = "🔔 " + n.message;
+
+        const date = document.createElement("p");
+
+        date.className = "small";
+
+        date.textContent = n.date;
+
+        const status = document.createElement("p");
+
+        status.className = "small";
+
+        status.textContent =
+            n.read === true ? "Read" : "Unread";
+
+        item.append(message, date, status);
+
+        notificationList.appendChild(item);
+
+    });
+
+}
+
+// MARK ALL NOTIFICATIONS AS READ
+
+function markAllRead() {
+
+    if (!currentUser) return;
+
+    notifications.forEach(n => {
+
+        const belongsToUser =
+            currentUser.role === "Admin"
+                ? n.owner === "CampusCare Admin"
+                : n.owner === currentUser.name;
+
+        if (belongsToUser) {
+            n.read = true;
+        }
+
+    });
+
+    saveData();
+
+    displayNotifications();
+
+    alert("All notifications marked as read!");
+
+}
+
+// GENERATE QR CODE
+
+function generateQR() {
+
+    const location = document
+        .getElementById("qrLocation")
+        .value.trim();
+
+    if (!location) {
+
+        alert("Please enter a location");
+
+        return;
+    }
+
+    document.getElementById("qrcode").innerHTML = "";
+
+    new QRCode(
+        document.getElementById("qrcode"),
+        {
+            text: "CAMPUSCARE:" +
+                encodeURIComponent(location),
+
+            width: 200,
+
+            height: 200
+        }
+    );
+}
+
+// DOWNLOAD QR CODE
+
+function downloadQR() {
+
+    const canvas =
+        document.querySelector("#qrcode canvas");
+
+    if (!canvas) {
+
+        alert("First generate a QR Code");
+
+        return;
+    }
+
+    const link = document.createElement("a");
+
+    link.href = canvas.toDataURL("image/png");
+
+    link.download = "CampusCare-QR.png";
+
+    link.click();
+}
+
+// START QR SCANNER
+
+async function startScanner() {
+
+    if (typeof Html5Qrcode === "undefined") {
+
+        alert("QR Scanner library not loaded. Check internet connection.");
+
+        return;
+    }
+
+    try {
+
+        if (html5QrCode) {
+
+            try {
+                await html5QrCode.stop();
+            } catch (e) {}
+
+            html5QrCode = null;
+        }
+
+        html5QrCode = new Html5Qrcode("qr-reader");
+
+        await html5QrCode.start(
+
+            { facingMode: "environment" },
+
+            {
+                fps: 10,
+                qrbox: 250
+            },
+
+            async function(decodedText) {
+
+                let location = decodedText;
+
+                if (decodedText.startsWith("CAMPUSCARE:")) {
+
+                    location = decodeURIComponent(
+                        decodedText.substring(11)
+                    );
+
+                }
+
+                document.getElementById("location").value =
+                    location;
+
+                document.getElementById("scanResult").textContent =
+                    "QR scanned successfully! Location: " + location;
+
+                await stopScanner();
+
+                alert("Location added successfully!");
+
+            },
+
+            function(errorMessage) {
+                // Ignore normal scanning errors.
+            }
+
+        );
+
+    } catch (error) {
+
+        alert(
+            "Unable to start camera. Allow camera permission and use HTTPS or localhost."
+        );
+
+        console.error(error);
+
+    }
+
+}
+
+// STOP QR SCANNER
+
+async function stopScanner() {
+
+    if (html5QrCode) {
+
+        try {
+
+            if (html5QrCode.isScanning) {
+
+                await html5QrCode.stop();
+
+            }
+
+            html5QrCode.clear();
+
+        } catch (error) {
+
+            console.log("Scanner stopped.");
+
+        }
+
+        html5QrCode = null;
+
+    }
+
+}
+</script>
+
+</body>
+</html>
